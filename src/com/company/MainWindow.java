@@ -49,15 +49,15 @@ public class MainWindow {
         // Iterate through the result and add employees to addressBook
         while ( rset.next() ) //get next row of table returned
         {
-            id = rset.getInt(0);
-            firstName = rset.getString(1);
-            lastName = rset.getString(2);
-            street = rset.getString(3);
-            city = rset.getString(4);
-            state = rset.getString(5);
-            zip = rset.getInt(6);
-            email = rset.getString(7);
-            telephone = rset.getString(8);
+            id = rset.getInt(1);
+            firstName = rset.getString(2);
+            lastName = rset.getString(3);
+            street = rset.getString(4);
+            city = rset.getString(5);
+            state = rset.getString(6);
+            zip = rset.getInt(7);
+            email = rset.getString(8);
+            telephone = rset.getString(9);
             addressBook.add(id, firstName, lastName, street, city, state, zip, email, telephone);
             SIZE++; // for counting number of entries read
         }
@@ -72,6 +72,10 @@ public class MainWindow {
                 }
             }
         });
+        //Close access to everything...will otherwise happen when disconnect from database.
+        rset.close();
+        stmt.close();
+        conn.close();
     }
 
     /**
