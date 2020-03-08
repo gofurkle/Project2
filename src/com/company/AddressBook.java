@@ -1,41 +1,73 @@
 package com.company;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
 /**
  * Maintains a list of AddressEntry's
- * @author Jamie Nguyen
+ * @author Emmanuel Gallegos & Jamie Nguyen
  */
 public class AddressBook {
     /**
      * ArrayList to hold all AddressEntry's
      */
-    public ArrayList<AddressEntry> contacts;
+    DefaultListModel<AddressEntry> addressEntryList;
 
     /**
      * Default constructor
      * Initializes an empty ArrayList to hold AddressEntry's
      */
     AddressBook() {
-        contacts = new ArrayList<AddressEntry>();
+        addressEntryList = new DefaultListModel<AddressEntry>();
     }
 
+    public void add(int ID, String firstName, String lastName, String street, String city, String state, int zip,
+                    String telephone, String email) {
+        AddressEntry newEntry = new AddressEntry(ID, firstName, lastName, street, city, state, zip, telephone, email);
+        this.add(newEntry);
+    }
     /**
      * Adds specified AddressEntry to the list then sorts the list to maintain alphabetical order.
-     * @param entry Specified AddressEntry to be added to the list of contacts
+     * @param entry Specified AddressEntry to be added to the list of addressEntryList
      */
     public void add(AddressEntry entry) {
-        contacts.add(entry);
-        contacts.sort(new ContactComparator());
+        /**
+         * index of where entry is to be inserted
+         */
+        int indexToAdd = 0;
+        /*
+         * While we haven't fallen off array and our entry's last name is lexicographically greater than our
+         * current search index's last name, advance to next index
+         */
+        while( indexToAdd < addressEntryList.size() &&
+                entry.getLastName().compareTo( addressEntryList.get( indexToAdd ).getLastName() ) > 0 ) {
+            indexToAdd++;
+        }
+        /*
+        if we haven't hit the end of the list, and the two last names are identical,
+        search according to first name as well
+        */
+        if( indexToAdd != addressEntryList.size() &&
+                entry.getLastName().compareTo( addressEntryList.get( indexToAdd ).getLastName() ) == 0 )
+        {
+            while( indexToAdd < addressEntryList.size() &&
+                    entry.getFirstName().compareTo( addressEntryList.get( indexToAdd ).getFirstName() ) > 0 &&
+                    entry.getLastName().compareTo( addressEntryList.get( indexToAdd ).getLastName() ) == 0 )
+            {
+                indexToAdd++;
+            }
+        }
+        // once appropriate position has been found, add entry to addressBook
+        addressEntryList.add( indexToAdd, entry );
     }
 
     /**
      * Removes the specified AddressEntry
-     * @param entry Specified AddressEntry to be removed from the list of contacts
+     * @param entry Specified AddressEntry to be removed from the list of addressEntryList
      */
     public void remove(AddressEntry entry) {
-        contacts.remove(entry);
+        addressEntryList.removeElement(entry);
     }
 
     /**
@@ -43,15 +75,15 @@ public class AddressBook {
      * @param lastNamePrefix Any string, including the empty string
      * @return A list of all AddressEntry's with the specified lastNamePrefix. If user inputs the empty string a list of all AddressEntry's will be returned.
      */
-    public ArrayList<AddressEntry> find(String lastNamePrefix) {
+    public  DefaultListModel<AddressEntry> find(String lastNamePrefix) {
         if(lastNamePrefix.equals("")) {
-            return this.contacts;
+            return this.addressEntryList;
         } else {
-            ArrayList<AddressEntry> result = new ArrayList<AddressEntry>();
-            for(int i = 0; i < contacts.size(); i++) {
+            DefaultListModel<AddressEntry> result = new DefaultListModel<AddressEntry>();
+            for(int i = 0; i < addressEntryList.size(); i++) {
                 // Checks if the current AddressEntry's lastName starts with lastNamePrefix
-                if(contacts.get(i).lastName.startsWith(lastNamePrefix)) {
-                    result.add(contacts.get(i));
+                if(addressEntryList.get(i).lastName.startsWith(lastNamePrefix)) {
+                    result.addElement(addressEntryList.get(i));
                 }
             }
             return result;
@@ -62,84 +94,8 @@ public class AddressBook {
      * Goes through the list of AddressEntry's using an iterator and displays the contents of each AddressEntry
      */
     public void list() {
-        Iterator it = contacts.iterator();
-        while(it.hasNext()) {
-            System.out.print(it.next()+"\n");
-        }
-    }
-
-    /**
-     * Initializes the AddressBook with AddressEntry's from a specially formatted
-     * @param filename Specially formatted text file
-     * @throws FileNotFoundException
-     */
-    public void readFromFile(String filename) throws FileNotFoundException {
-        try {
-            File in = new File("src/com/company/" + filename);            //
-            BufferedReader inputBuffer = new BufferedReader(new FileReader(in));
-            String line;                                // Temporary string to hold data from current line
-            int lineNum = 0;                            // Keeps count of lines to help with parsing input file
-            AddressEntry entry = new AddressEntry();    // Temporary AddressEntry to hold values
-
-            /* Goes through the specially formatted file line by line, creates new AddressEntry's and adds
-             * them to the AddressBook
-             */
-            while((line = inputBuffer.readLine()) != null) {
-                if(lineNum % 8 == 0) {
-                    entry.firstName = line;
-                }
-                if(lineNum % 8 == 1) {
-                    entry.lastName = line;
-                }
-                if(lineNum % 8 == 2) {
-                    entry.street = line;
-                }
-                if(lineNum  % 8 == 3) {
-                    entry.city = line;
-                }
-                if(lineNum % 8 == 4) {
-                    entry.state = line;
-                }
-                if(lineNum % 8 == 5) {
-                    entry.zip = Integer.parseInt(line);
-                }
-                if(lineNum % 8 == 6) {
-                    entry.email = line;
-                }
-                if(lineNum % 8 == 7) {
-                    entry.telephone = line;
-                    this.add(entry);
-                    entry = new AddressEntry();
-                }
-                lineNum++;
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File could not be found.");
-            System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-/**
- * Custom compare method used to sort the list of AddressEntry's in AddressBook
- */
-class ContactComparator implements Comparator<AddressEntry> {
-    /**
-     * Overrides the compare method to sort AddressEntry's.
-     * Used to sort based on last name, but if last names are the same, sorts by first name;
-     * @param e1
-     * @param e2
-     * @return int value containing the result of compareTo()
-     */
-    @Override
-    public int compare(AddressEntry e1, AddressEntry e2) {
-        int lastNameComp = (e1.lastName).compareTo(e2.lastName);
-        if(lastNameComp != 0) {
-            return (e1.lastName).compareTo(e2.lastName);
-        } else {
-            return (e1.firstName).compareTo(e2.firstName);
+        for( int i = 0; i < addressEntryList.size(); i++) {
+            System.out.print(addressEntryList.get(i) + "\n");
         }
     }
 }

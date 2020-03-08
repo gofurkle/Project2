@@ -60,12 +60,13 @@ public class AddressEntry {
         this.city = "";
         this.state = "";
         this.zip = 0;
-        this.telephone = "";
         this.email = "";
+        this.telephone = "";
     }
 
     /**
      * Entry Constructor
+     * @param id unique key
      * @param first first name
      * @param last last name
      * @param street street
@@ -75,32 +76,26 @@ public class AddressEntry {
      * @param tele telephone number
      * @param email email address
      */
-    AddressEntry(String first, String last, String street, String city, String state, int zip, String email, String tele) {
-        this.firstName = first;
-        this.lastName = last;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-        this.telephone = tele;
-        this.email = email;
-    }
-
     AddressEntry(int id, String first, String last, String street, String city, String state, int zip, String email, String tele) {
-        this.id = id;
         this.firstName = first;
         this.lastName = last;
         this.street = street;
         this.city = city;
         this.state = state;
         this.zip = zip;
-        this.telephone = tele;
         this.email = email;
+        this.telephone = tele;
     }
 
     public AddressEntry(String text, String text1, String text2, String text3, String text4) {
     }
-
+    /**
+     * Sets this AddressEntry's firstName field to the string specified by first
+     * @param ID Specified first name string
+     */
+    public void setID(int ID) {
+        this.id = ID;
+    }
     /**
      * Sets this AddressEntry's firstName field to the string specified by first
      * @param first Specified first name string
@@ -173,6 +168,11 @@ public class AddressEntry {
         this.state = state;
     }
 
+    /**
+     * Returns this AddressEntry's unique id
+     * @return unique id (int)
+     */
+    public int getID() { return this.id; }
     /**
      * Returns this AddressEntry's state
      * @return This AddressEntry's state field
