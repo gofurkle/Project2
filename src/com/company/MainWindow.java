@@ -20,11 +20,14 @@ public class MainWindow {
      */
     static AddressBook addressBook;
     /**
-     * for holding size of data set
+     * for holding SIZE of data set
      */
     static int SIZE = 0;
     /**
      * Launch the application
+     * @param args command line args
+     * @throws SQLException for database operations
+     * @throws ClassNotFoundException for driver connection
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException{
         addressBook = new AddressBook(); // for holding address entries
@@ -68,9 +71,12 @@ public class MainWindow {
             email = rset.getString(8);
             telephone = rset.getString(9);
             addressBook.add(new AddressEntry(id, firstName, lastName, street, city, state, zip, email, telephone));
-            SIZE++; // for counting number of entries read
+            if( id > SIZE ) { SIZE = id; }; // for finding next key to use
         }
         EventQueue.invokeLater(new Runnable() {
+            /**
+             * create main window
+             */
             public void run() {
                 try {
                     MainWindow window = new MainWindow();
@@ -198,7 +204,7 @@ public class MainWindow {
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, buttons[0]);
 
                 if(c == 0) {
-                    SIZE++; // add 1 to size
+                    SIZE++; // add 1 to SIZE
                     AddressEntry newEntry = new AddressEntry(SIZE, firstName.getText(), lastName.getText(), street.getText(), city.getText(), state.getText(), Integer.parseInt(zip.getText()), email.getText(), phone.getText());
                     addressBook.add(newEntry); // add it to our address book
 
