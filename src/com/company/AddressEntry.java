@@ -2,7 +2,7 @@ package com.company;
 
 /**
  * Maintains information about an entry's name, address, phone number, and email address
- * @author Jamie Nguyen
+ * @author Jamie Nguyen and Emmanuel Gallegos
  */
 public class AddressEntry {
     /**
@@ -73,8 +73,8 @@ public class AddressEntry {
      * @param city city
      * @param state state
      * @param zip zip code
-     * @param tele telephone number
      * @param email email address
+     * @param tele telephone number
      */
     AddressEntry(int id, String first, String last, String street, String city, String state, int zip, String email, String tele) {
         this.id = id;

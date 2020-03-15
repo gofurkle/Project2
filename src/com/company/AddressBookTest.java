@@ -64,4 +64,14 @@ public class AddressBookTest {
         // check that new size is 4
         assertEquals( 4, ab.addressEntryList.size() );
     }
+
+    @org.junit.jupiter.api.Test
+    void remove() {
+        // check that initial size is 2
+        assertEquals( 2, ab.addressEntryList.size());
+        // remove 0'th element calling MY remove method
+        ab.remove(ab.addressEntryList.elementAt(0));
+        // check that new size is 1
+        assertEquals( 1, ab.addressEntryList.size());
+    }
 }

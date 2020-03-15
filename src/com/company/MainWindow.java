@@ -121,13 +121,13 @@ public class MainWindow {
         btnNew.addActionListener(new ActionListener() {
             // Add item to JList's ListModel
             public void actionPerformed(ActionEvent arg0) {
+                // attempt to open connection to database
                 Connection conn = null;
                 try {
                     conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-
 
                 JPanel newEntryPanel = new JPanel();
                 newEntryPanel.setLayout(new GridLayout(8,10));
@@ -171,13 +171,12 @@ public class MainWindow {
                     addressBook.add(newEntry); // add it to our address book
 
                     // PUSH TO THE DATABASE
-                    // the mysql insert statement
-                    String query = " insert into ADDRESSENTRYTABLE (ID, FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL, PHONE)"
-                            + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
                     // create the mysql insert preparedstatement
                     PreparedStatement preparedStmt = null;
                     try {
+                        // the mysql insert statement
+                        String query = " insert into ADDRESSENTRYTABLE (ID, FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL, PHONE)"
+                                + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         // create prepared statement for insertion
                         preparedStmt = conn.prepareStatement(query);
                         preparedStmt.setInt   (1, SIZE);
