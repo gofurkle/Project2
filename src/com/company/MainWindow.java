@@ -13,6 +13,7 @@ public class MainWindow {
     JList<AddressEntry> addressEntryJList;  // for displaying local data
     static AddressBook addressBook; // for containing local data
     static int SIZE = 0;    // for holding size of data set
+
     /**
      * Launch the application.
      */
@@ -106,7 +107,16 @@ public class MainWindow {
 
         // Create JPanel containing all buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3,5));
+        buttonPanel.setLayout(new FlowLayout());
+
+        // Create Jpanel for Search, add text field to enter search criteria
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout());
+
+        // Create a panel to hold the button and search panel
+        JPanel bigPanel = new JPanel(new GridLayout(2,3));
+        bigPanel.add(buttonPanel);
+        bigPanel.add(searchPanel);
 
         // create scrollPane associated with JList
         JScrollPane scrollPane = new JScrollPane();
@@ -122,6 +132,13 @@ public class MainWindow {
         buttonPanel.add(btnNew);
         buttonPanel.add(btnRemove);
         buttonPanel.add(btnDisplay);
+
+        // Add text field and search button to search Panel
+        JTextField search = new JTextField(15);
+        JButton btnSearch = new JButton("Search");
+        searchPanel.add(new JLabel("Search: "));
+        searchPanel.add(search);
+        searchPanel.add(btnSearch);
 
         btnNew.addActionListener(new ActionListener() {
             // Add item to JList's ListModel
@@ -139,7 +156,7 @@ public class MainWindow {
                 JTextField email = new JTextField(15);
                 JTextField phone = new JTextField(15);
 
-                // Add to JPanel
+                // Add text boxes to JPanel with appropriate labels
                 newEntryPanel.add(new JLabel("First Name:"));
                 newEntryPanel.add(firstName);
                 newEntryPanel.add(new JLabel("Last Name:"));
@@ -159,6 +176,7 @@ public class MainWindow {
 
                 String[] buttons = {"Confirm" , "Cancel"};
 
+                // Displays the window for user to add a new entry
                 int c = JOptionPane.showOptionDialog(btnNew, newEntryPanel, "Add new entry",
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, buttons[0]);
 
@@ -176,9 +194,9 @@ public class MainWindow {
             // Remove item from our JList's ListModel
             public void actionPerformed(ActionEvent arg0) {
                 int index = addressEntryJList.getSelectedIndex();
-                if(index != -1)//something is selected otherwise do nothing
+                if(index != -1) // something is selected otherwise do nothing
                 {
-                    //retrieve the DefaultListModel associated
+                    // retrieve the DefaultListModel associated
                     // with our JList and remove from it the AddressEntry at this index
                     ((DefaultListModel<AddressEntry>) (addressEntryJList.getModel())).remove(index);
                     // REMOVE FROM DATABASE
@@ -193,8 +211,15 @@ public class MainWindow {
             }
         });
 
-        // adds the buttons to the scroll pane
-        scrollPane.add(buttonPanel);
-        scrollPane.setColumnHeaderView(buttonPanel);
+        btnSearch.addActionListener(new ActionListener() {
+           // Search is case SENSITIVE
+           public void actionPerformed(ActionEvent arg0) {
+               JList<AddressEntry> searchResult = new JList<AddressEntry>(addressBook.find(search.getText()));
+               scrollPane.getViewport().add(searchResult);
+           }
+        });
+
+        scrollPane.add(bigPanel);   // Add button panel and search panel to scroll pane
+        scrollPane.setColumnHeaderView(bigPanel);
     }
 }
