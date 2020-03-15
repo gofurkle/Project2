@@ -1,9 +1,7 @@
 package com.company;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
@@ -12,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AddressBookTest {
 
     AddressBook ab = new AddressBook(); // generic address book for testing
-    InputStream in;  // for generating fake stream of possible user data
     ByteArrayOutputStream generatedOutput = new ByteArrayOutputStream();    // for capturing console output
 
     @org.junit.jupiter.api.BeforeEach

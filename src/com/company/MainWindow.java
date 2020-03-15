@@ -7,12 +7,24 @@ import java.awt.event.ActionEvent;
 import java.sql.*;
 
 public class MainWindow {
-    private JFrame frame;
-    JList<AddressEntry> addressEntryJList;  // for displaying local data
-    static AddressBook addressBook; // for containing local data
-    static int SIZE = 0;    // for holding size of data set
     /**
-     * Launch the application.
+     * main frame for window
+     */
+    private JFrame frame;
+    /**
+     * for displaying our addressbook's data to the scroll pane
+     */
+    JList<AddressEntry> addressEntryJList;
+    /**
+     * for modifying local address book data
+     */
+    static AddressBook addressBook;
+    /**
+     * for holding size of data set
+     */
+    static int SIZE = 0;
+    /**
+     * Launch the application
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException{
         addressBook = new AddressBook(); // for holding address entries
@@ -75,7 +87,7 @@ public class MainWindow {
     }
 
     /**
-     * Create the application.
+     * Create the main window and initialize the local data from db
      */
     public MainWindow() {
 
@@ -92,7 +104,7 @@ public class MainWindow {
     }
 
     /**
-     * Initialize the contents of the frame.
+     * Initialize the contents of the frame, open database connection, populate initial list from db
      */
     private void initialize() {
         frame = new JFrame();
@@ -119,7 +131,10 @@ public class MainWindow {
         buttonPanel.add(btnDisplay);
 
         btnNew.addActionListener(new ActionListener() {
-            // Add item to JList's ListModel
+            /**
+             * add an item to jlists's listmodel and to the database
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
                 // attempt to open connection to database
                 Connection conn = null;
@@ -199,8 +214,12 @@ public class MainWindow {
             }
         });
 
+
         btnRemove.addActionListener(new ActionListener() {
-            // Remove item from our JList's ListModel
+            /**
+             * adds an action listener for removing data from lists (local and remote)
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
                 int index = addressEntryJList.getSelectedIndex();
                 // open connection to database
@@ -233,8 +252,12 @@ public class MainWindow {
             }
         });
 
+
         btnDisplay.addActionListener(new ActionListener() {
-            // Display contents of JList's ListModel
+            /**
+             * adds an action listener for displaying contents from local list to scroll pane
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
                 scrollPane.getViewport().add(addressEntryJList);
             }
