@@ -113,7 +113,17 @@ public class MainWindow {
 
         // Create JPanel containing all buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3,5));
+        buttonPanel.setLayout(new FlowLayout());
+
+        // Create JPanel for searching entries
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout());
+
+        // Create Panel to hold button and search panel
+        JPanel bigPanel = new JPanel();
+        bigPanel.setLayout(new GridLayout(2, 3));
+        bigPanel.add(buttonPanel);
+        bigPanel.add(searchPanel);
 
         // create scrollPane associated with JList
         JScrollPane scrollPane = new JScrollPane();
@@ -129,6 +139,13 @@ public class MainWindow {
         buttonPanel.add(btnNew);
         buttonPanel.add(btnRemove);
         buttonPanel.add(btnDisplay);
+
+        // Add Textfield and search button to search panel
+        JTextField searchCriteria = new JTextField(15);
+        JButton btnSearch = new JButton("Search");
+        searchPanel.add(new JLabel("Search:"));
+        searchPanel.add(searchCriteria);
+        searchPanel.add(btnSearch);
 
         btnNew.addActionListener(new ActionListener() {
             /**
@@ -263,8 +280,19 @@ public class MainWindow {
             }
         });
 
+        btnSearch.addActionListener(new ActionListener() {
+            /**
+             * adds an action listener for displaying the search results to the scroll pane
+             * @param arg0
+             */
+            public void actionPerformed(ActionEvent arg0) {
+                JList<AddressEntry> searchResult = new JList<AddressEntry>(addressBook.find(searchCriteria.getText()));
+                scrollPane.getViewport().add(searchResult);
+            }
+        });
+
         // adds the buttons to the scroll pane
-        scrollPane.add(buttonPanel);
-        scrollPane.setColumnHeaderView(buttonPanel);
+        scrollPane.add(bigPanel);
+        scrollPane.setColumnHeaderView(bigPanel);
     }
 }
