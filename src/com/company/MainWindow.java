@@ -1,5 +1,3 @@
-// adding manny's comment
-
 package com.company;
 
 import java.awt.*;
@@ -9,13 +7,24 @@ import java.awt.event.ActionEvent;
 import java.sql.*;
 
 public class MainWindow {
-    private JFrame frame;
-    JList<AddressEntry> addressEntryJList;  // for displaying local data
-    static AddressBook addressBook; // for containing local data
-    static int SIZE = 0;    // for holding size of data set
-
     /**
-     * Launch the application.
+     * main frame for window
+     */
+    private JFrame frame;
+    /**
+     * for displaying our addressbook's data to the scroll pane
+     */
+    JList<AddressEntry> addressEntryJList;
+    /**
+     * for modifying local address book data
+     */
+    static AddressBook addressBook;
+    /**
+     * for holding size of data set
+     */
+    static int SIZE = 0;
+    /**
+     * Launch the application
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException{
         addressBook = new AddressBook(); // for holding address entries
@@ -37,8 +46,7 @@ public class MainWindow {
         // generic host url = jdbc:oracle:thin:login/password@host:port/SID for Oracle SEE Account INFO you
         // were given by our CS tech in an email ---THIS WILL BE DIFFERENT
         //jdbc:oracle:thin:@//adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu
-        Connection conn =
-                DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+        Connection conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
 
         // Create a Statement
         Statement stmt = conn.createStatement ();
@@ -59,10 +67,9 @@ public class MainWindow {
             zip = rset.getInt(7);
             email = rset.getString(8);
             telephone = rset.getString(9);
-            addressBook.add(id, firstName, lastName, street, city, state, zip, email, telephone);
+            addressBook.add(new AddressEntry(id, firstName, lastName, street, city, state, zip, email, telephone));
             SIZE++; // for counting number of entries read
         }
-
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -80,11 +87,11 @@ public class MainWindow {
     }
 
     /**
-     * Create the application.
+     * Create the main window and initialize the local data from db
      */
     public MainWindow() {
 
-        //Now when we create our JList do it from our ListModel rather than our vector of AddressEntry
+        // create our JList from our ListModel
         addressEntryJList = new JList<AddressEntry>(addressBook.addressEntryList);
 
         //setting up the look of the JList
@@ -97,9 +104,8 @@ public class MainWindow {
     }
 
     /**
-     * Initialize the contents of the frame.
+     * Initialize the contents of the frame, open database connection, populate initial list from db
      */
-
     private void initialize() {
         frame = new JFrame();
         frame.setBounds(100, 100, 450, 300);
@@ -107,16 +113,7 @@ public class MainWindow {
 
         // Create JPanel containing all buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
-
-        // Create Jpanel for Search, add text field to enter search criteria
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new FlowLayout());
-
-        // Create a panel to hold the button and search panel
-        JPanel bigPanel = new JPanel(new GridLayout(2,3));
-        bigPanel.add(buttonPanel);
-        bigPanel.add(searchPanel);
+        buttonPanel.setLayout(new GridLayout(3,5));
 
         // create scrollPane associated with JList
         JScrollPane scrollPane = new JScrollPane();
@@ -133,16 +130,20 @@ public class MainWindow {
         buttonPanel.add(btnRemove);
         buttonPanel.add(btnDisplay);
 
-        // Add text field and search button to search Panel
-        JTextField search = new JTextField(15);
-        JButton btnSearch = new JButton("Search");
-        searchPanel.add(new JLabel("Search: "));
-        searchPanel.add(search);
-        searchPanel.add(btnSearch);
-
         btnNew.addActionListener(new ActionListener() {
-            // Add item to JList's ListModel
+            /**
+             * add an item to jlists's listmodel and to the database
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
+                // attempt to open connection to database
+                Connection conn = null;
+                try {
+                    conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
                 JPanel newEntryPanel = new JPanel();
                 newEntryPanel.setLayout(new GridLayout(8,10));
 
@@ -156,7 +157,7 @@ public class MainWindow {
                 JTextField email = new JTextField(15);
                 JTextField phone = new JTextField(15);
 
-                // Add text boxes to JPanel with appropriate labels
+                // Add to JPanel
                 newEntryPanel.add(new JLabel("First Name:"));
                 newEntryPanel.add(firstName);
                 newEntryPanel.add(new JLabel("Last Name:"));
@@ -176,7 +177,6 @@ public class MainWindow {
 
                 String[] buttons = {"Confirm" , "Cancel"};
 
-                // Displays the window for user to add a new entry
                 int c = JOptionPane.showOptionDialog(btnNew, newEntryPanel, "Add new entry",
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, buttons[0]);
 
@@ -186,40 +186,85 @@ public class MainWindow {
                     addressBook.add(newEntry); // add it to our address book
 
                     // PUSH TO THE DATABASE
+                    // create the mysql insert preparedstatement
+                    PreparedStatement preparedStmt = null;
+                    try {
+                        // the mysql insert statement
+                        String query = " insert into ADDRESSENTRYTABLE (ID, FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL, PHONE)"
+                                + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        // create prepared statement for insertion
+                        preparedStmt = conn.prepareStatement(query);
+                        preparedStmt.setInt   (1, SIZE);
+                        preparedStmt.setString(2, firstName.getText());
+                        preparedStmt.setString(3, lastName.getText());
+                        preparedStmt.setString(4, street.getText());
+                        preparedStmt.setString(5, city.getText());
+                        preparedStmt.setString(6, state.getText());
+                        preparedStmt.setInt   (7, Integer.parseInt(zip.getText()));
+                        preparedStmt.setString(8, email.getText());
+                        preparedStmt.setString(9, phone.getText());
+                        // execute the preparedstatement
+                        preparedStmt.execute();
+                        // close the connection
+                        conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
+
 
         btnRemove.addActionListener(new ActionListener() {
-            // Remove item from our JList's ListModel
+            /**
+             * adds an action listener for removing data from lists (local and remote)
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
                 int index = addressEntryJList.getSelectedIndex();
-                if(index != -1) // something is selected otherwise do nothing
-                {
-                    // retrieve the DefaultListModel associated
-                    // with our JList and remove from it the AddressEntry at this index
-                    ((DefaultListModel<AddressEntry>) (addressEntryJList.getModel())).remove(index);
-                    // REMOVE FROM DATABASE
+                // open connection to database
+                Connection conn = null;
+                try {
+                    conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+                    if(index != -1)//something is selected otherwise do nothing
+                    {
+                        // get ID of object to delete from database
+                        int toDelete = addressEntryJList.getModel().getElementAt(index).getID();
+                        //retrieve the DefaultListModel associated
+                        // with our JList and remove from it the AddressEntry at this index
+                        ((DefaultListModel<AddressEntry>) (addressEntryJList.getModel())).remove(index);
+                        // REMOVE FROM DATABASE
+                        // create query
+                        String query = "delete from ADDRESSENTRYTABLE where id = ?";
+                        // create statement from query
+                        PreparedStatement preparedStmt = conn.prepareStatement(query);
+                        // set up statement
+                        preparedStmt.setInt(1, toDelete);
+                        // execute the prepared statement
+                        preparedStmt.execute();
+                        // close connection
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
+
             }
         });
 
+
         btnDisplay.addActionListener(new ActionListener() {
-            // Display contents of JList's ListModel
+            /**
+             * adds an action listener for displaying contents from local list to scroll pane
+             * @param arg0
+             */
             public void actionPerformed(ActionEvent arg0) {
                 scrollPane.getViewport().add(addressEntryJList);
             }
         });
 
-        btnSearch.addActionListener(new ActionListener() {
-           // Search is case SENSITIVE
-           public void actionPerformed(ActionEvent arg0) {
-               JList<AddressEntry> searchResult = new JList<AddressEntry>(addressBook.find(search.getText()));
-               scrollPane.getViewport().add(searchResult);
-           }
-        });
-
-        scrollPane.add(bigPanel);   // Add button panel and search panel to scroll pane
-        scrollPane.setColumnHeaderView(bigPanel);
+        // adds the buttons to the scroll pane
+        scrollPane.add(buttonPanel);
+        scrollPane.setColumnHeaderView(buttonPanel);
     }
 }

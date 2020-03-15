@@ -22,11 +22,6 @@ public class AddressBook {
         addressEntryList = new DefaultListModel<AddressEntry>();
     }
 
-    public void add(int ID, String firstName, String lastName, String street, String city, String state, int zip,
-                    String telephone, String email) {
-        AddressEntry newEntry = new AddressEntry(ID, firstName, lastName, street, city, state, zip, telephone, email);
-        this.add(newEntry);
-    }
     /**
      * Adds specified AddressEntry to the list then sorts the list to maintain alphabetical order.
      * @param entry Specified AddressEntry to be added to the list of addressEntryList
@@ -87,15 +82,6 @@ public class AddressBook {
                 }
             }
             return result;
-        }
-    }
-
-    /**
-     * Goes through the list of AddressEntry's using an iterator and displays the contents of each AddressEntry
-     */
-    public void list() {
-        for( int i = 0; i < addressEntryList.size(); i++) {
-            System.out.print(addressEntryList.get(i) + "\n");
         }
     }
 }
