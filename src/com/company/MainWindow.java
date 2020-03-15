@@ -1,5 +1,3 @@
-// adding manny's comment
-
 package com.company;
 
 import java.awt.*;
@@ -96,7 +94,6 @@ public class MainWindow {
     /**
      * Initialize the contents of the frame.
      */
-
     private void initialize() {
         frame = new JFrame();
         frame.setBounds(100, 100, 450, 300);
@@ -207,13 +204,33 @@ public class MainWindow {
             // Remove item from our JList's ListModel
             public void actionPerformed(ActionEvent arg0) {
                 int index = addressEntryJList.getSelectedIndex();
-                if(index != -1)//something is selected otherwise do nothing
-                {
-                    //retrieve the DefaultListModel associated
-                    // with our JList and remove from it the AddressEntry at this index
-                    ((DefaultListModel<AddressEntry>) (addressEntryJList.getModel())).remove(index);
-                    // REMOVE FROM DATABASE
+                // open connection to database
+                Connection conn = null;
+                try {
+                    conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+                    if(index != -1)//something is selected otherwise do nothing
+                    {
+                        // get ID of object to delete from database
+                        int toDelete = addressEntryJList.getModel().getElementAt(index).getID();
+                        //retrieve the DefaultListModel associated
+                        // with our JList and remove from it the AddressEntry at this index
+                        ((DefaultListModel<AddressEntry>) (addressEntryJList.getModel())).remove(index);
+                        // REMOVE FROM DATABASE
+                        // create query
+                        String query = "delete from ADDRESSENTRYTABLE where id = ?";
+                        // create statement from query
+                        PreparedStatement preparedStmt = conn.prepareStatement(query);
+                        // set up statement
+                        preparedStmt.setInt(1, toDelete);
+                        // execute the prepared statement
+                        preparedStmt.execute();
+                        // close connection
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
+
             }
         });
 

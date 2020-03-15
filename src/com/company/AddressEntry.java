@@ -77,6 +77,7 @@ public class AddressEntry {
      * @param email email address
      */
     AddressEntry(int id, String first, String last, String street, String city, String state, int zip, String email, String tele) {
+        this.id = id;
         this.firstName = first;
         this.lastName = last;
         this.street = street;
