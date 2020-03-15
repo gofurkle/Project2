@@ -55,7 +55,7 @@ public class MainWindow {
             zip = rset.getInt(7);
             email = rset.getString(8);
             telephone = rset.getString(9);
-            addressBook.add(id, firstName, lastName, street, city, state, zip, email, telephone);
+            addressBook.add(new AddressEntry(id, firstName, lastName, street, city, state, zip, email, telephone));
             SIZE++; // for counting number of entries read
         }
         EventQueue.invokeLater(new Runnable() {
@@ -79,7 +79,7 @@ public class MainWindow {
      */
     public MainWindow() {
 
-        //Now when we create our JList do it from our ListModel rather than our vector of AddressEntry
+        // create our JList from our ListModel
         addressEntryJList = new JList<AddressEntry>(addressBook.addressEntryList);
 
         //setting up the look of the JList
