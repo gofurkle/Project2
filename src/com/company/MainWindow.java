@@ -36,8 +36,7 @@ public class MainWindow {
         // generic host url = jdbc:oracle:thin:login/password@host:port/SID for Oracle SEE Account INFO you
         // were given by our CS tech in an email ---THIS WILL BE DIFFERENT
         //jdbc:oracle:thin:@//adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu
-        Connection conn =
-                DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+        Connection conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
 
         // Create a Statement
         Statement stmt = conn.createStatement ();
@@ -61,7 +60,6 @@ public class MainWindow {
             addressBook.add(id, firstName, lastName, street, city, state, zip, email, telephone);
             SIZE++; // for counting number of entries read
         }
-
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -126,6 +124,14 @@ public class MainWindow {
         btnNew.addActionListener(new ActionListener() {
             // Add item to JList's ListModel
             public void actionPerformed(ActionEvent arg0) {
+                Connection conn = null;
+                try {
+                    conn = DriverManager.getConnection("jdbc:oracle:thin:mcs1014/CIwblJjO@adcsdb01.csueastbay.edu:1521/mcspdb.ad.csueastbay.edu");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
                 JPanel newEntryPanel = new JPanel();
                 newEntryPanel.setLayout(new GridLayout(8,10));
 
@@ -168,6 +174,31 @@ public class MainWindow {
                     addressBook.add(newEntry); // add it to our address book
 
                     // PUSH TO THE DATABASE
+                    // the mysql insert statement
+                    String query = " insert into ADDRESSENTRYTABLE (ID, FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL, PHONE)"
+                            + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    // create the mysql insert preparedstatement
+                    PreparedStatement preparedStmt = null;
+                    try {
+                        // create prepared statement for insertion
+                        preparedStmt = conn.prepareStatement(query);
+                        preparedStmt.setInt   (1, SIZE);
+                        preparedStmt.setString(2, firstName.getText());
+                        preparedStmt.setString(3, lastName.getText());
+                        preparedStmt.setString(4, street.getText());
+                        preparedStmt.setString(5, city.getText());
+                        preparedStmt.setString(6, state.getText());
+                        preparedStmt.setInt   (7, Integer.parseInt(zip.getText()));
+                        preparedStmt.setString(8, email.getText());
+                        preparedStmt.setString(9, phone.getText());
+                        // execute the preparedstatement
+                        preparedStmt.execute();
+                        // close the connection
+                        conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
