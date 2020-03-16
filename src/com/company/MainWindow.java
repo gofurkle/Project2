@@ -174,6 +174,16 @@ public class MainWindow {
                 JTextField email = new JTextField(15);
                 JTextField phone = new JTextField(15);
 
+                // Assign input verifiers to each text field
+                firstName.setInputVerifier(new AlphaVerifier());
+                lastName.setInputVerifier(new AlphaVerifier());
+                street.setInputVerifier(new StreetVerifier());
+                city.setInputVerifier(new AlphaVerifier());
+                state.setInputVerifier(new AlphaVerifier());
+                zip.setInputVerifier(new ZipCodeVerifier());
+                email.setInputVerifier(new EmailVerifier());
+                phone.setInputVerifier(new PhoneNumberVerifier());
+
                 // Add to JPanel
                 newEntryPanel.add(new JLabel("First Name:"));
                 newEntryPanel.add(firstName);
@@ -294,5 +304,45 @@ public class MainWindow {
         // adds the buttons to the scroll pane
         scrollPane.add(bigPanel);
         scrollPane.setColumnHeaderView(bigPanel);
+    }
+
+    class AlphaVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            return text.matches("[a-zA-Z]+|^$");
+        }
+    }
+
+    class StreetVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            return text.matches("[a-zA-Z0-9 ]+|^$");
+        }
+    }
+
+    class ZipCodeVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            return text.matches("\\d\\d\\d\\d\\d|^$");
+        }
+    }
+
+    class EmailVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            return text.matches("\\w+@[a-zA-Z]+\\.[a-zA-Z]+|^$");
+        }
+    }
+
+    class PhoneNumberVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            return text.matches("\\d\\d\\d[-]?\\d\\d\\d[-]?\\d\\d\\d\\d|^$");
+        }
     }
 }
