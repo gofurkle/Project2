@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  * Maintains a list of AddressEntry's
- * @author Emmanuel Gallegos & Jamie Nguyen
+ * @author Emmanuel Gallegos and Jamie Nguyen
  */
 public class AddressBook {
     /**
