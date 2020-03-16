@@ -312,6 +312,9 @@ public class MainWindow {
         scrollPane.setColumnHeaderView(bigPanel);
     }
 
+    /**
+     * Custom input verifier that tests if the input given to a JTextField is alphabetical or the empty string
+     */
     class AlphaVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
@@ -320,6 +323,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Custom input verifier that tests if the input given to a JTextField contains numbers and alphbetical characters or the empty string
+     */
     class StreetVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
@@ -328,6 +334,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Custom input verifier that tests if the input given to a JTextField is a 5-digit string
+     */
     class ZipCodeVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
@@ -336,6 +345,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Custom input verifier that tests if the input given to a JTextField follows the format of an email address
+     */
     class EmailVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
@@ -344,6 +356,9 @@ public class MainWindow {
         }
     }
 
+    /**
+     * Custom input verifier that tests if the input given to a JTextField is a 10-digit phone number separated or not separated by dashes
+     */
     class PhoneNumberVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
